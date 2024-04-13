@@ -18,6 +18,10 @@ public class ASTVisitor extends CminusBaseVisitor<Node> {
         this.LOGGER = LOGGER;
     }
 
+    public SymbolTable getSymbolTable() {
+        return symbolTable;
+    }
+
     private VarType getVarType(CminusParser.TypeSpecifierContext ctx) {
         final String t = ctx.getText();
         return (t.equals("int")) ? VarType.INT : (t.equals("bool")) ? VarType.BOOL : VarType.CHAR;

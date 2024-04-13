@@ -8,7 +8,7 @@ package submit.ast;
  *
  * @author edwajohn
  */
-public class BinaryOperator implements Expression {
+public class BinaryOperator implements Expression, AbstractNode {
 
   private final Expression lhs, rhs;
   private final BinaryOperatorType type;

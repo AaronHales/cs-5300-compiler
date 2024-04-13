@@ -8,7 +8,7 @@ package submit.ast;
  *
  * @author edwajohn
  */
-public class UnaryOperator implements Expression {
+public class UnaryOperator implements Expression, AbstractNode  {
 
   private final UnaryOperatorType type;
   private final Expression expression;

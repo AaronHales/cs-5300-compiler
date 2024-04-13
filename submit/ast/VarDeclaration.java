@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author edwajohn
  */
-public class VarDeclaration implements Declaration, Node {
+public class VarDeclaration implements Declaration, Node, AbstractNode  {
 
   private final VarType type;
   private final List<String> ids;

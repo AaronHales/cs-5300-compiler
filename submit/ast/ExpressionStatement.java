@@ -8,7 +8,7 @@ package submit.ast;
  *
  * @author edwajohn
  */
-public class ExpressionStatement implements Statement {
+public class ExpressionStatement implements Statement, AbstractNode  {
 
   private final Expression expression;
 

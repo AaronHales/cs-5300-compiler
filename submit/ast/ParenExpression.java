@@ -8,7 +8,7 @@ package submit.ast;
  *
  * @author edwajohn
  */
-public class ParenExpression implements Expression {
+public class ParenExpression implements Expression, AbstractNode  {
 
   private final Expression expression;
 

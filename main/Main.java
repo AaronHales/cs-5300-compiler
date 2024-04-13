@@ -7,8 +7,11 @@ import parser.CminusLexer;
 import parser.CminusParser;
 import submit.ASTVisitor;
 import org.antlr.v4.runtime.Parser;
+import submit.RegisterAllocator;
+import submit.SymbolTable;
 import submit.ast.Node;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Handler;
@@ -27,7 +30,7 @@ public class Main {
         Level level = Level.INFO;
 
         // TODO Enable trace-level code as needed. When true, LOGGER.fine() statements will be visible.
-        final boolean trace = false;
+        final boolean trace = true;
         if (trace) {
             level = Level.ALL;
         }
@@ -40,8 +43,10 @@ public class Main {
         }
         LOGGER = Logger.getLogger(Parser.class.getName());
 
-        // TODO Update the filename as needed
-        final String filename = "data/test1.c";
+        if (args.length < 1) {
+            throw new RuntimeException("Be sure to add your test C- file as a command-line parameter.");
+        }
+        final String filename = args[0];
 
         LOGGER.info("");
         LOGGER.info("Parsing " + filename + "\n");
@@ -53,22 +58,49 @@ public class Main {
         parser.setBuildParseTree(true);
         CminusParser.ProgramContext programCtx = parser.program();
 
-        // TODO Implement building of the parse tree
         LOGGER.info("");
         LOGGER.info("Building abstract syntax tree");
         LOGGER.info("");
         ASTVisitor v = new ASTVisitor(LOGGER);
         Node ast = v.visitProgram(programCtx);
+        SymbolTable symbolTable = v.getSymbolTable();
 
-        // TODO Output formatted code
         LOGGER.info("");
-        LOGGER.info("Formatted code:");
+        LOGGER.info("MIPS code:");
         LOGGER.info("");
-        StringBuilder builder = new StringBuilder();
+        StringBuilder code = new StringBuilder();
+        StringBuilder data = new StringBuilder();
+        RegisterAllocator regAllocator = new RegisterAllocator();
         try {
-            ast.toCminus(builder, "");
+            ast.toMIPS(code, data, symbolTable, regAllocator);
         } finally {
-            LOGGER.info(builder.toString());
+            StringBuilder mips = new StringBuilder();
+            mips.append("# All program code is placed after the\n" +
+                    "# .text assembler directive\n" +
+                    ".text\n" +
+                    "\n" +
+                    "# Declare main as a global function\n" +
+                    ".globl\tmain\n\nj main\n");
+            mips.append(code.toString());
+            mips.append("\n# All memory structures are placed after the\n" +
+                    "# .data assembler directive\n" +
+                    ".data\n" +
+                    "\n");
+            mips.append(data.toString());
+
+            // Write MIPS code to stdout
+            LOGGER.info(mips.toString());
+
+            // Write MIPS code to output file for easy loading into MARS
+            final String fn = filename.substring(0, filename.length()-1) + "asm";
+            try {
+                FileWriter myWriter = new FileWriter(fn);
+                myWriter.write(mips.toString());
+                myWriter.close();
+            } catch (IOException e) {
+                LOGGER.severe("Error writing to file " + fn + "\n");
+                e.printStackTrace();
+            }
         }
     }
 

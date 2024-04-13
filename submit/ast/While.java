@@ -8,7 +8,7 @@ package submit.ast;
  *
  * @author edwajohn
  */
-public class While implements Statement {
+public class While implements Statement, AbstractNode  {
 
   private final Expression expression;
   private final Statement statement;

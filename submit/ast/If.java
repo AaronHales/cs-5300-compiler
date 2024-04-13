@@ -8,7 +8,7 @@ package submit.ast;
  *
  * @author edwajohn
  */
-public class If implements Statement {
+public class If implements Statement, AbstractNode  {
 
   private final Expression expression;
   private final Statement trueStatement;
