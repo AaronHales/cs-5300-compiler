@@ -17,6 +17,8 @@ public class SymbolTable {
   private SymbolTable parent;
   private final List<SymbolTable> children;
 
+  private int uniqueLable = 0;
+
   public SymbolTable() {
     table = new HashMap<>();
     parent = null;
@@ -58,6 +60,11 @@ public class SymbolTable {
 
   public SymbolTable getParent() {
     return parent;
+  }
+
+  public String getUniqueLabel() {
+    int currentUniqueLabel = uniqueLable++;
+    return "datalabel" + currentUniqueLabel;
   }
 
 }

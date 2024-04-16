@@ -4,6 +4,10 @@
  */
 package submit.ast;
 
+import submit.MIPSResult;
+import submit.RegisterAllocator;
+import submit.SymbolTable;
+
 /**
  *
  * @author edwajohn
@@ -21,6 +25,10 @@ public class ParenExpression implements Expression, AbstractNode  {
     builder.append("(");
     expression.toCminus(builder, prefix);
     builder.append(")");
+  }
+
+  public MIPSResult toMIPS(StringBuilder code, StringBuilder data, SymbolTable symbolTable, RegisterAllocator regAllocator) {
+    return expression.toMIPS(code, data, symbolTable, regAllocator);
   }
 
 }

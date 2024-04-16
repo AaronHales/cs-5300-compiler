@@ -4,6 +4,10 @@
  */
 package submit.ast;
 
+import submit.MIPSResult;
+import submit.RegisterAllocator;
+import submit.SymbolTable;
+
 /**
  *
  * @author edwajohn
@@ -29,6 +33,10 @@ public class Assignment implements Expression, Node, AbstractNode {
       builder.append(type.toString());
 
     }
+  }
+
+  public MIPSResult toMIPS(StringBuilder code, StringBuilder data, SymbolTable symbolTable, RegisterAllocator regAllocator) {
+    return rhs.toMIPS(code, data, symbolTable, regAllocator);
   }
 
 }

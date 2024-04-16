@@ -10,7 +10,7 @@ import java.util.ArrayList;
  *
  * @author edwajohn
  */
-public interface Statement extends Node {
+public interface Statement extends Node, AbstractNode {
     public static CompoundStatement empty() { return new CompoundStatement(new ArrayList<>()); }
 
 }

@@ -11,8 +11,6 @@ j main
 main:
 # Entering a new scope.
 # Symbols in symbol table:
-#  println
-#  return
 # Update the stack pointer.
 addi $sp $sp -0
 # println

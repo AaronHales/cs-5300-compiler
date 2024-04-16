@@ -8,6 +8,6 @@ package submit.ast;
  *
  * @author edwajohn
  */
-public interface Declaration extends Statement, Node {
+public interface Declaration extends Statement, Node, AbstractNode {
 
 }
