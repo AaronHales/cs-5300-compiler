@@ -38,23 +38,30 @@ public class BinaryOperator implements Expression, AbstractNode {
 
   @Override
   public MIPSResult toMIPS(StringBuilder code, StringBuilder data, SymbolTable symbolTable, RegisterAllocator regAllocator) {
+    String resultReg = regAllocator.getAny();
     MIPSResult left = lhs.toMIPS(code, data, symbolTable, regAllocator);
+    regAllocator.clear(resultReg);
     String leftRegister = left.getRegister();
     if (left.getRegister() != null) {
-      leftRegister = regAllocator.getAny();
+      if (lhs instanceof Mutable) {
+        leftRegister = regAllocator.getAny();
 //      # Load the value of a.
-      code.append("lw ").append(leftRegister).append(" 0(").append(left.getRegister()).append(")\n");
-      regAllocator.clear(left.getRegister());
+        regAllocator.clear(left.getRegister());
+        code.append("lw ").append(leftRegister).append(" 0(").append(left.getRegister()).append(")\n");
+      }
     }
+    resultReg = regAllocator.getAny();
     MIPSResult right = rhs.toMIPS(code, data, symbolTable, regAllocator);
     String rightRegister = right.getRegister();
     if (right.getRegister() != null) {
-      rightRegister = regAllocator.getAny();
-      code.append("lw ").append(rightRegister).append(" 0(").append(right.getRegister()).append(")\n");
-      regAllocator.clear(right.getRegister());
-      regAllocator.clear(leftRegister);
+      regAllocator.clear(resultReg);
+      if (rhs instanceof Mutable) {
+        rightRegister = regAllocator.getAny();
+        code.append("lw ").append(rightRegister).append(" 0(").append(right.getRegister()).append(")\n");
+        regAllocator.clear(right.getRegister());
+      }
+//      regAllocator.clear(leftRegister);
     }
-    String resultReg = regAllocator.getAny();
     if (left.getRegister() != null && right.getRegister() != null) {
 
       if (this.type == BinaryOperatorType.MINUS) {

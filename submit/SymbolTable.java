@@ -88,4 +88,20 @@ public class SymbolTable {
       return null;
     }
   }
+
+  public ArrayList<String> inScope() {
+    ArrayList<String> varsInScope = new ArrayList<>();
+    for (String key : table.keySet()) {
+      if (key.equals("newline")) {
+        continue;
+      }
+      else if (table.get(key).getId().equals("println") || !table.get(key).isFunction()) {
+        varsInScope.add(key);
+      }
+      else if (table.get(key).isFunction()) {
+        varsInScope.add("return");
+      }
+    }
+    return varsInScope;
+  }
 }

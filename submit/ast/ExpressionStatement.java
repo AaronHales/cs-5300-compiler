@@ -30,7 +30,11 @@ public class ExpressionStatement implements Statement, AbstractNode  {
   @Override
   public MIPSResult toMIPS(StringBuilder code, StringBuilder data, SymbolTable symbolTable, RegisterAllocator regAllocator) {
 
-    return expression.toMIPS(code, data, symbolTable, regAllocator);
+    MIPSResult result =  expression.toMIPS(code, data, symbolTable, regAllocator);
+    if (result.getRegister() != null) {
+//      regAllocator.clear(result.getRegister());
+    }
+    return result;
   }
 
 }

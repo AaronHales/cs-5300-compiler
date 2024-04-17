@@ -48,4 +48,12 @@ public class SymbolInfo {
   public void updateOffset(int offset) {
     this.offset += offset;
   }
+
+  public boolean isFunction() {
+    return function;
+  }
+
+  public String getId() {
+    return id;
+  }
 }

@@ -6,19 +6,22 @@
 .globl	main
 
 j main
+
+# code for main
 main:
 # Entering a new scope.
 # Symbols in symbol table:
-# update stack pointer.
-addi $sp $sp -0
+#  println
+# Update the stack pointer.
+addi $sp $sp 0
 # println
-la $a0 dataLabel0
+la $a0 datalabel0
 li $v0 4
 syscall
 la $a0 newline
 li $v0 4
 syscall
-# exiting scope.
+# Exiting scope.
 addi $sp $sp 0
 li $v0 10
 syscall
@@ -27,5 +30,5 @@ syscall
 # .data assembler directive
 .data
 
-newline: .asciiz "\n"
-dataLabel0: .asciiz "Hello world"
+newline:	.asciiz "\n"
+datalabel0:	.asciiz "Hello world"

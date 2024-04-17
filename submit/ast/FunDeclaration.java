@@ -6,6 +6,7 @@ package submit.ast;
 
 import submit.MIPSResult;
 import submit.RegisterAllocator;
+import submit.SymbolInfo;
 import submit.SymbolTable;
 
 import java.util.ArrayList;
@@ -49,9 +50,14 @@ public class FunDeclaration implements Declaration, Node, AbstractNode  {
 
   @Override
   public MIPSResult toMIPS(StringBuilder code, StringBuilder data, SymbolTable symbolTable, RegisterAllocator regAllocator) {
-    code.append("# code for ").append(this.id).append("\n");
+    code.append("\n# code for ").append(this.id).append("\n");
     code.append(id).append(":\n");
-    statement.toMIPS(code, data, symbolTable, regAllocator);
+    SymbolTable child = symbolTable.createChild();
+    child.addSymbol(id, new SymbolInfo(id, returnType, true));
+    statement.toMIPS(code, data, child, regAllocator);
+    if (!this.id.equals("main")) {
+      code.append("jr $ra\n");
+    }
     return MIPSResult.createVoidResult();
   }
 

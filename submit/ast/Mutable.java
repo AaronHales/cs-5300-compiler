@@ -51,6 +51,8 @@ public class Mutable implements Expression, Node, AbstractNode  {
     code.append("\n");
     code.append("# Add the stack pointer address to the offset.\n");
     code.append("add ").append(register).append(" ").append(register).append(" ").append("$sp\n");
+//    regAllocator.clear(register);
+
     return MIPSResult.createRegisterResult(register, VarType.INT);
   }
 

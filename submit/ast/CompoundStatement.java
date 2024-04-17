@@ -38,21 +38,28 @@ public class CompoundStatement implements Statement, AbstractNode  {
     this.symbolTable = symbolTable.createChild();
     regAllocator.clearAll();
     int parentsize = symbolTable.getSize();
-    code.append("# Entering a new scope.\n" +
-            "# Symbols in symbol table:\n" +
-            "# Update the stack pointer.\n");
-    code.append("addi $sp $sp ");
+    code.append("# Entering a new scope.\n");
+    code.append("# Symbols in symbol table:\n");
+    StringBuilder compoundStmt = new StringBuilder();
+    compoundStmt.append("# Update the stack pointer.\n");
+    compoundStmt.append("addi $sp $sp ");
     if (parentsize != 0) {
-      code.append(-this.symbolTable.getParent().getSize());
+      compoundStmt.append(-this.symbolTable.getParent().getSize());
     }
     else {
-      code.append(parentsize);
+      compoundStmt.append(parentsize);
     }
-    code.append("\n");
-//    this.symbolTable.updateOffset(parentsize);
+    compoundStmt.append("\n");
     for (Statement statement : statements) {
-      statement.toMIPS(code, data, this.symbolTable, regAllocator);
+      MIPSResult result =  statement.toMIPS(compoundStmt, data, this.symbolTable, regAllocator);
+      if (result.getRegister() != null) {
+        regAllocator.clear(result.getRegister());
+      }
     }
+    for (String var : this.symbolTable.inScope()) {
+      code.append("#  ").append(var).append("\n");
+    }
+    code.append(compoundStmt);
     code.append("# Exiting scope.\n");
     code.append("addi $sp $sp ");
     if (parentsize != 0) {
@@ -62,7 +69,6 @@ public class CompoundStatement implements Statement, AbstractNode  {
       code.append(-parentsize);
     }
     code.append("\n");
-    regAllocator.clearAll();
     return MIPSResult.createVoidResult();
   }
 

@@ -44,11 +44,6 @@ public class Call implements Expression, AbstractNode  {
     if (this.id.equals("println")) {
       code.append("# println\n");
       symbolTable.addSymbol(this.id, new SymbolInfo(this.id, null, true));
-
-      if (symbolTable.find("newline") == null) {
-        data.append("newline:\t.asciiz \"\\n\"\n");
-        symbolTable.addSymbol("newline", new SymbolInfo("newline", VarType.CHAR, false));
-      }
       for (Expression arg : args) {
         MIPSResult result = arg.toMIPS(code, data, symbolTable, regAllocator);
         if (result.getRegister() == null && result.getAddress() != null) {
@@ -56,8 +51,8 @@ public class Call implements Expression, AbstractNode  {
           code.append("li $v0 4\n").append("syscall\n");
         }
         if (result.getRegister() != null && result.getAddress() == null) {
-          code.append("move $a0 ").append(result.getRegister()).append("\n");
           regAllocator.clear(result.getRegister());
+          code.append("move $a0 ").append(result.getRegister()).append("\n");
           code.append("li $v0 1\n").append("syscall\n");
         }
       }
@@ -65,9 +60,33 @@ public class Call implements Expression, AbstractNode  {
       code.append("la $a0 newline\n").append("li $v0 4\n").append("syscall\n");
     }
     else {
+      code.append("# Calling function ").append(id).append("\n");
+      code.append("# Save $ra to a register\n");
+      String raReg = regAllocator.getAny();
+      code.append("move ").append(raReg).append(" $ra\n");
+      code.append("# Save $t0-9 registers\n");
+      int offset = 4 + symbolTable.getSize();
+      regAllocator.saveT(code, offset-4);
+      code.append("# Evaluate parameters and save to stack\n");
       for (Expression arg: args) {
-        arg.toMIPS(code, data, symbolTable, regAllocator);
+        MIPSResult result = arg.toMIPS(code, data, symbolTable, regAllocator);
+        if (result.getRegister() != null) {
+          regAllocator.clear(result.getRegister());
+        }
       }
+      code.append("# Update the stack pointer\n");
+
+      code.append("add $sp $sp ").append(-offset).append("\n");
+      code.append("# Calling the function\n");
+      code.append("jal ").append(id).append("\n");
+      code.append("# Restore the stack pointer\n");
+      code.append("add $sp $sp ").append(offset).append("\n");
+
+      code.append("# Restore $t0-9 registers\n");
+      regAllocator.restoreT(code, offset-4);
+      code.append("# Restore $ra\n");
+      code.append("move $ra ").append(raReg).append("\n");
+      regAllocator.clear(raReg);
     }
     return MIPSResult.createVoidResult();
   }
