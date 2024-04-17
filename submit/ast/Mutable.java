@@ -42,8 +42,8 @@ public class Mutable implements Expression, Node, AbstractNode  {
     if (symbolTable.findInThisOnly(id) != null) {
       code.append(-symbolTable.find(id).getOffset());
     }
-    else if (symbolTable.getParent().find(id) != null){
-      code.append(symbolTable.find(id).getOffset()-symbolTable.getParent().getSize());
+    else if (symbolTable.find(id) != null){
+      code.append(-symbolTable.find(id).getOffset());
     }
     else {
       code.append(-symbolTable.find(id).getOffset());

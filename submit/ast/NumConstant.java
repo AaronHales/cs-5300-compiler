@@ -24,6 +24,7 @@ public class NumConstant implements Expression, Node, AbstractNode  {
     builder.append(Integer.toString(value));
   }
 
+  @Override
   public MIPSResult toMIPS(StringBuilder code, StringBuilder data, SymbolTable symbolTable, RegisterAllocator regAllocator) {
     String register = regAllocator.getAny();
     code.append("li ").append(register).append(" ").append(this.value).append("\n");

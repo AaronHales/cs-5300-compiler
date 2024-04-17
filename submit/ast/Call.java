@@ -68,11 +68,27 @@ public class Call implements Expression, AbstractNode  {
       int offset = 4 + symbolTable.getSize();
       regAllocator.saveT(code, offset-4);
       code.append("# Evaluate parameters and save to stack\n");
+      int paramCount = -4;
+      for (String regInUse : regAllocator.getUsed()) {
+        paramCount += 4;
+      }
       for (Expression arg: args) {
         MIPSResult result = arg.toMIPS(code, data, symbolTable, regAllocator);
+        String resultReg = regAllocator.getAny();
         if (result.getRegister() != null) {
           regAllocator.clear(result.getRegister());
+          if (arg instanceof Mutable) {
+            code.append("lw ").append(resultReg).append(" 0(").append(result.getRegister()).append(")\n");
+          }
+          else {
+            regAllocator.clear(resultReg);
+            resultReg = result.getRegister();
+          }
+          code.append("sw ").append(resultReg).append(" ");
+          code.append(-(symbolTable.getSize()+paramCount)).append("($sp)\n");
+          paramCount += 4;
         }
+        regAllocator.clear(resultReg);
       }
       code.append("# Update the stack pointer\n");
 
