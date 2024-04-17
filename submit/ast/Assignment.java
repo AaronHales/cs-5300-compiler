@@ -36,7 +36,19 @@ public class Assignment implements Expression, Node, AbstractNode {
   }
 
   public MIPSResult toMIPS(StringBuilder code, StringBuilder data, SymbolTable symbolTable, RegisterAllocator regAllocator) {
-    return rhs.toMIPS(code, data, symbolTable, regAllocator);
+    MIPSResult leftSide = mutable.toMIPS(code, data, symbolTable, regAllocator);
+    code.append("# Compute rhs for assignment ").append(type.toString()).append("\n");
+    MIPSResult rightSide = rhs.toMIPS(code, data, symbolTable, regAllocator);
+    if (rightSide.getRegister() != null && rightSide.getAddress() == null) {
+      if (leftSide.getAddress() == null && leftSide.getRegister() != null) {
+        code.append("# complete assignment statement with store\n");
+        code.append("sw ").append(rightSide.getRegister()).append(" 0(").append(leftSide.getRegister()).append(")\n");
+        regAllocator.clear(leftSide.getRegister());
+        regAllocator.clear(rightSide.getRegister());
+      }
+
+    }
+    return MIPSResult.createVoidResult();
   }
 
 }

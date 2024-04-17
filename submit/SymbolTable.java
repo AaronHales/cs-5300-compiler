@@ -16,6 +16,7 @@ public class SymbolTable {
   private final HashMap<String, SymbolInfo> table;
   private SymbolTable parent;
   private final List<SymbolTable> children;
+  private int size;
 
   private int uniqueLable = 0;
 
@@ -23,10 +24,13 @@ public class SymbolTable {
     table = new HashMap<>();
     parent = null;
     children = new ArrayList<>();
+    this.size = 0;
   }
 
   public void addSymbol(String id, SymbolInfo symbol) {
     table.put(id, symbol);
+    size += symbol.getOffset();
+    symbol.updateOffset(size-symbol.getOffset());
   }
 
   /**
@@ -55,6 +59,7 @@ public class SymbolTable {
     SymbolTable child = new SymbolTable();
     children.add(child);
     child.parent = this;
+    child.resetOffset();
     return child;
   }
 
@@ -67,4 +72,20 @@ public class SymbolTable {
     return "datalabel" + currentUniqueLabel;
   }
 
+  public void resetOffset() {
+    this.size = 0;
+  }
+
+  public int getSize() {
+    return size;
+  }
+
+  public SymbolInfo findInThisOnly(String id) {
+    if (this.table.containsKey(id)) {
+      return this.table.get(id);
+    }
+    else {
+      return null;
+    }
+  }
 }

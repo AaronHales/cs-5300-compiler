@@ -4,6 +4,11 @@
  */
 package submit.ast;
 
+import submit.MIPSResult;
+import submit.RegisterAllocator;
+import submit.SymbolInfo;
+import submit.SymbolTable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +47,14 @@ public class VarDeclaration implements Declaration, Node, AbstractNode  {
     }
     builder.delete(builder.length() - 2, builder.length());
     builder.append(";\n");
+  }
+
+  @Override
+  public MIPSResult toMIPS(StringBuilder code, StringBuilder data, SymbolTable symbolTable, RegisterAllocator regAllocator) {
+    for (String id : ids) {
+      symbolTable.addSymbol(id, new SymbolInfo(id, this.type, false));
+    }
+    return MIPSResult.createVoidResult();
   }
 
 }

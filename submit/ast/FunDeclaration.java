@@ -50,8 +50,7 @@ public class FunDeclaration implements Declaration, Node, AbstractNode  {
   @Override
   public MIPSResult toMIPS(StringBuilder code, StringBuilder data, SymbolTable symbolTable, RegisterAllocator regAllocator) {
     code.append("# code for ").append(this.id).append("\n");
-    code.append(this.id).append(":\n").append("# Entering a new scope.\n").append("# Symbols in symbol table:\n");
-    code.append("# Update the stack pointer.\n").append("addi $sp $sp -0\n");
+    code.append(id).append(":\n");
     statement.toMIPS(code, data, symbolTable, regAllocator);
     return MIPSResult.createVoidResult();
   }

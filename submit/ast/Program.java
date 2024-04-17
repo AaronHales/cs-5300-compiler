@@ -43,8 +43,6 @@ public class Program implements Node, AbstractNode  {
     for (Declaration declaration : declarations) {
       declaration.toMIPS(code, data, symbolTable, regAllocator);
     }
-    code.append("# Exiting scope.\n");
-    code.append("addi $sp $sp 0\n");
     code.append("li $v0 10\n");
     code.append("syscall\n");
     return MIPSResult.createVoidResult();

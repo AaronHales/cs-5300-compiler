@@ -39,32 +39,47 @@ public class BinaryOperator implements Expression, AbstractNode {
   @Override
   public MIPSResult toMIPS(StringBuilder code, StringBuilder data, SymbolTable symbolTable, RegisterAllocator regAllocator) {
     MIPSResult left = lhs.toMIPS(code, data, symbolTable, regAllocator);
+    String leftRegister = left.getRegister();
+    if (left.getRegister() != null) {
+      leftRegister = regAllocator.getAny();
+//      # Load the value of a.
+      code.append("lw ").append(leftRegister).append(" 0(").append(left.getRegister()).append(")\n");
+      regAllocator.clear(left.getRegister());
+    }
     MIPSResult right = rhs.toMIPS(code, data, symbolTable, regAllocator);
+    String rightRegister = right.getRegister();
+    if (right.getRegister() != null) {
+      rightRegister = regAllocator.getAny();
+      code.append("lw ").append(rightRegister).append(" 0(").append(right.getRegister()).append(")\n");
+      regAllocator.clear(right.getRegister());
+      regAllocator.clear(leftRegister);
+    }
     String resultReg = regAllocator.getAny();
     if (left.getRegister() != null && right.getRegister() != null) {
+
       if (this.type == BinaryOperatorType.MINUS) {
-        regAllocator.clear(left.getRegister());
-        regAllocator.clear(right.getRegister());
+        regAllocator.clear(leftRegister);
+        regAllocator.clear(rightRegister);
         resultReg = regAllocator.getAny();
-        code.append("minus ").append(resultReg).append(" ").append(left.getRegister()).append(" ").append(right.getRegister()).append("\n");
+        code.append("sub ").append(resultReg).append(" ").append(leftRegister).append(" ").append(rightRegister).append("\n");
       }
       else if (this.type == BinaryOperatorType.PLUS) {
-        regAllocator.clear(left.getRegister());
-        regAllocator.clear(right.getRegister());
+        regAllocator.clear(leftRegister);
+        regAllocator.clear(rightRegister);
         resultReg = regAllocator.getAny();
-        code.append("add ").append(resultReg).append(" ").append(left.getRegister()).append(" ").append(right.getRegister()).append("\n");
+        code.append("add ").append(resultReg).append(" ").append(leftRegister).append(" ").append(rightRegister).append("\n");
       }
       else if (this.type == BinaryOperatorType.TIMES) {
-        regAllocator.clear(left.getRegister());
-        regAllocator.clear(right.getRegister());
+        regAllocator.clear(leftRegister);
+        regAllocator.clear(rightRegister);
         resultReg = regAllocator.getAny();
-        code.append("mult ").append(left.getRegister()).append(" ").append(right.getRegister()).append("\n");
+        code.append("mult ").append(leftRegister).append(" ").append(rightRegister).append("\n");
         code.append("mflo ").append(resultReg).append("\n");
       }
       else if (this.type == BinaryOperatorType.DIVIDE) {
-        code.append("div ").append(left.getRegister()).append(" ").append(right.getRegister()).append("\n");
-        regAllocator.clear(left.getRegister());
-        regAllocator.clear(right.getRegister());
+        code.append("div ").append(leftRegister).append(" ").append(rightRegister).append("\n");
+        regAllocator.clear(leftRegister);
+        regAllocator.clear(rightRegister);
         resultReg = regAllocator.getAny();
         code.append("mflo ").append(resultReg).append("\n");
       }
