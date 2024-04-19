@@ -43,7 +43,7 @@ public class Mutable implements Expression, Node, AbstractNode  {
       code.append(-symbolTable.find(id).getOffset());
     }
     else if (symbolTable.find(id) != null){
-      code.append(-symbolTable.find(id).getOffset());
+      code.append(-symbolTable.find(id).getOffset()+symbolTable.getParent().getSize());
     }
     else {
       code.append(-symbolTable.find(id).getOffset());
@@ -52,6 +52,8 @@ public class Mutable implements Expression, Node, AbstractNode  {
     code.append("# Add the stack pointer address to the offset.\n");
     code.append("add ").append(register).append(" ").append(register).append(" ").append("$sp\n");
 //    regAllocator.clear(register);
+//    code.append("# Load the value of ").append(id).append("\n");
+//    code.append("lw ").append(returnReg).append(" 0(").append(register).append(")\n");
 
     return MIPSResult.createRegisterResult(register, VarType.INT);
   }

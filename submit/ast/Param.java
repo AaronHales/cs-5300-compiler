@@ -48,7 +48,7 @@ public class Param implements Node, AbstractNode  {
   @Override
   public MIPSResult toMIPS(StringBuilder code, StringBuilder data, SymbolTable symbolTable, RegisterAllocator regAllocator) {
     symbolTable.addSymbol(id, new SymbolInfo(id, type, false));
-    symbolTable.find(id).updateOffset(-symbolTable.find(id).getOffset());
+//    symbolTable.find(id).updateOffset(-symbolTable.find(id).getOffset());
     return MIPSResult.createVoidResult();
   }
 

@@ -56,8 +56,8 @@ public class Call implements Expression, AbstractNode  {
           code.append("li $v0 1\n").append("syscall\n");
         }
       }
-
       code.append("la $a0 newline\n").append("li $v0 4\n").append("syscall\n");
+      return MIPSResult.createVoidResult();
     }
     else {
       code.append("# Calling function ").append(id).append("\n");
@@ -85,7 +85,8 @@ public class Call implements Expression, AbstractNode  {
             resultReg = result.getRegister();
           }
           code.append("sw ").append(resultReg).append(" ");
-          code.append(-(symbolTable.getSize()+paramCount)).append("($sp)\n");
+          code.append(-(symbolTable.getSize() + paramCount)).append("($sp)\n");
+
           paramCount += 4;
         }
         regAllocator.clear(resultReg);
@@ -93,7 +94,7 @@ public class Call implements Expression, AbstractNode  {
       code.append("# Update the stack pointer\n");
 
       code.append("add $sp $sp ").append(-offset).append("\n");
-      code.append("# Calling the function\n");
+      code.append("# Call the function\n");
       code.append("jal ").append(id).append("\n");
       code.append("# Restore the stack pointer\n");
       code.append("add $sp $sp ").append(offset).append("\n");
@@ -103,8 +104,16 @@ public class Call implements Expression, AbstractNode  {
       code.append("# Restore $ra\n");
       code.append("move $ra ").append(raReg).append("\n");
       regAllocator.clear(raReg);
+      String returnRa = regAllocator.getAny();
+//      data.append(id).append(" return val type: ").append(symbolTable.find(id).getType()).append("\n");
+      if (symbolTable.find(id).getType() != null) {
+        code.append("# Get return value off stack\n");
+        code.append("lw ").append(returnRa).append(" ").append(-(paramCount)).append("($sp)\n");
+      }
+      regAllocator.clear(returnRa);
+      regAllocator.clear(raReg);
+      return MIPSResult.createRegisterResult(returnRa, symbolTable.find(id).getType());
     }
-    return MIPSResult.createVoidResult();
   }
 
 }

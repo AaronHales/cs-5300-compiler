@@ -56,4 +56,11 @@ public class SymbolInfo {
   public String getId() {
     return id;
   }
+
+  public VarType getType() {
+    if (type != null) {
+      return type;
+    }
+    return null;
+  }
 }

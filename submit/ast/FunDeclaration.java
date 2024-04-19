@@ -56,8 +56,8 @@ public class FunDeclaration implements Declaration, Node, AbstractNode  {
     for (Param param : params) {
       param.toMIPS(code, data, child, regAllocator);
     }
-    child.addSymbol(id, new SymbolInfo(id, returnType, true));
-    child = symbolTable.createChild();
+    child.addSymbol(id, new SymbolInfo("return", returnType, false));
+    child = child.createChild();
     statement.toMIPS(code, data, child, regAllocator);
     if (!this.id.equals("main")) {
       code.append("jr $ra\n");
