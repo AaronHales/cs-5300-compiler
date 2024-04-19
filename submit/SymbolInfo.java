@@ -17,22 +17,26 @@ public class SymbolInfo {
   private final VarType type;
   private final boolean function;
   private int offset;
+  private int baseOffset;
 
   public SymbolInfo(String id, VarType type, boolean function) {
     this.id = id;
     this.type = type;
     this.function = function;
-    if (this.type == VarType.BOOL) {
-      this.offset = 2;
-    }
-    else if (this.type == VarType.INT) {
-      this.offset = 4;
-    }
-    else if (this.type == VarType.CHAR) {
-      this.offset = 0;
+    this.offset = 0;
+    if (function) {
+      this.baseOffset = 0;
     }
     else {
-      this.offset = 0;
+      if (this.type == VarType.BOOL) {
+        this.baseOffset = -2;
+      } else if (this.type == VarType.INT) {
+        this.baseOffset = -4;
+      } else if (this.type == VarType.CHAR) {
+        this.baseOffset = 0;
+      } else {
+        this.baseOffset = 0;
+      }
     }
   }
 
@@ -41,12 +45,22 @@ public class SymbolInfo {
     return "<" + id + ", " + type + '>';
   }
 
-  public int getOffset() {
-    return offset;
+  public int getTotalOffset() {
+    int temp = baseOffset+offset;
+    offset = 0;
+    return temp;
+  }
+
+  public int getBaseOffset() {
+    return baseOffset;
   }
 
   public void updateOffset(int offset) {
-    this.offset += offset;
+    this.offset = offset;
+  }
+
+  public void updateBaseOffset(int offset) {
+    this.baseOffset += offset;
   }
 
   public boolean isFunction() {

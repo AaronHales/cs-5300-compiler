@@ -45,7 +45,7 @@ public class Return implements Statement, AbstractNode  {
       if (expr instanceof Mutable) {
         code.append("lw ").append(resultReg).append(" 0(").append(exprResult.getRegister()).append(")\n");
       }
-      code.append("sw ").append(resultReg).append(" ").append(-symbolTable.getParent().getParent().getSize()).append("($sp)\n");
+      code.append("sw ").append(resultReg).append(" ").append(-symbolTable.getParent().getParent().getSize()-4).append("($sp)\n");
       code.append("jr $ra\n");
       return MIPSResult.createRegisterResult(resultReg, exprResult.getType());
     }

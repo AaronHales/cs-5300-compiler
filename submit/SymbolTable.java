@@ -29,8 +29,8 @@ public class SymbolTable {
 
   public void addSymbol(String id, SymbolInfo symbol) {
     table.put(id, symbol);
-    size += symbol.getOffset();
-    symbol.updateOffset(size-symbol.getOffset());
+    size -= symbol.getBaseOffset();
+    symbol.updateBaseOffset(-size-symbol.getBaseOffset());
   }
 
   /**
@@ -45,7 +45,11 @@ public class SymbolTable {
       return table.get(id);
     }
     if (parent != null) {
-      return parent.find(id);
+      SymbolInfo parentReturn = parent.find(id);
+      if (parentReturn != null) {
+        parentReturn.updateOffset(parent.size);
+      }
+      return parentReturn;
     }
     return null;
   }
@@ -78,15 +82,6 @@ public class SymbolTable {
 
   public int getSize() {
     return size;
-  }
-
-  public SymbolInfo findInThisOnly(String id) {
-    if (this.table.containsKey(id)) {
-      return this.table.get(id);
-    }
-    else {
-      return null;
-    }
   }
 
   public ArrayList<String> inScope() {
