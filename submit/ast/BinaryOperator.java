@@ -49,6 +49,7 @@ public class BinaryOperator implements Expression, AbstractNode {
         regAllocator.clear(left.getRegister());
         code.append("lw ").append(leftRegister).append(" 0(").append(left.getRegister()).append(")\n");
 //        regAllocator.clear(leftRegister);
+//        regAllocator.clear(resultReg);
       }
     }
     resultReg = regAllocator.getAny();
@@ -62,6 +63,9 @@ public class BinaryOperator implements Expression, AbstractNode {
         regAllocator.clear(right.getRegister());
       }
 //      regAllocator.clear(leftRegister);
+    }
+    else {
+      regAllocator.clear(resultReg);
     }
     if (left.getRegister() != null && right.getRegister() != null) {
 
