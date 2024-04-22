@@ -51,8 +51,16 @@ public class Call implements Expression, AbstractNode  {
           code.append("li $v0 4\n").append("syscall\n");
         }
         if (result.getRegister() != null && result.getAddress() == null) {
+          String resultReg = regAllocator.getAny();
           regAllocator.clear(result.getRegister());
-          code.append("move $a0 ").append(result.getRegister()).append("\n");
+          if (arg instanceof Mutable) {
+            code.append(String.format("lw %s 0(%s)\n", resultReg, result.getRegister()));
+            code.append("move $a0 ").append(resultReg).append("\n");
+            regAllocator.clear(resultReg);
+          }
+          else {
+            code.append("move $a0 ").append(result.getRegister()).append("\n");
+          }
           code.append("li $v0 1\n").append("syscall\n");
         }
       }
