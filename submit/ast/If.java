@@ -50,16 +50,25 @@ public class If implements Statement, AbstractNode  {
   @Override
   public MIPSResult toMIPS(StringBuilder code, StringBuilder data, SymbolTable symbolTable, RegisterAllocator regAllocator) {
     MIPSResult expressionResult = expression.toMIPS(code, data, symbolTable, regAllocator);
-//    regAllocator.clear(expressionResult.getRegister());
+    if (expressionResult.getRegister() != null) {
+      regAllocator.clear(expressionResult.getRegister());
+    }
     String trueUniquelabel = symbolTable.getUniqueLabel();
     String falseUniquelabel = symbolTable.getUniqueLabel();
     code.append(String.format("bne %s $zero %s\n", expressionResult.getRegister(), trueUniquelabel));
-    MIPSResult trueStatementMIPS = trueStatement.toMIPS(code, data, symbolTable, regAllocator);
-//    regAllocator.clear(trueStatementMIPS.getRegister());
+    if (trueStatement != null) {
+      MIPSResult trueStatementMIPS = trueStatement.toMIPS(code, data, symbolTable, regAllocator);
+      if (trueStatementMIPS.getRegister() != null) {
+        regAllocator.clear(trueStatementMIPS.getRegister());
+      }
+    }
     if (falseStatement != null) {
       code.append(String.format("j %s\n", falseUniquelabel));
       code.append(trueUniquelabel).append(":\n");
       MIPSResult falseStatementMIPS = falseStatement.toMIPS(code, data, symbolTable, regAllocator);
+      if (falseStatementMIPS.getRegister() != null) {
+        regAllocator.clear(falseStatementMIPS.getRegister());
+      }
       code.append(falseUniquelabel).append(":\n");
     }
     else {
