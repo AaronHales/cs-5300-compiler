@@ -41,9 +41,9 @@ public class Call implements Expression, AbstractNode  {
 
   @Override
   public MIPSResult toMIPS(StringBuilder code, StringBuilder data, SymbolTable symbolTable, RegisterAllocator regAllocator) {
+//    symbolTable.addSymbol(this.id, new SymbolInfo(this.id, null, true));
     if (this.id.equals("println")) {
       code.append("# println\n");
-      symbolTable.addSymbol(this.id, new SymbolInfo(this.id, null, true));
       for (Expression arg : args) {
         MIPSResult result = arg.toMIPS(code, data, symbolTable, regAllocator);
         if (result.getRegister() == null && result.getAddress() != null) {
@@ -105,6 +105,7 @@ public class Call implements Expression, AbstractNode  {
       code.append("move $ra ").append(raReg).append("\n");
       regAllocator.clear(raReg);
       String returnRa = regAllocator.getAny();
+//      code.append("return symbol table: ").append(symbolTable.find(id)).append("\n");
 //      data.append(id).append(" return val type: ").append(symbolTable.find(id).getType()).append("\n");
       if (symbolTable.find(id).getType() != null) {
         code.append("# Get return value off stack\n");

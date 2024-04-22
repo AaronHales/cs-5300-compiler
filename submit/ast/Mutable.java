@@ -35,7 +35,6 @@ public class Mutable implements Expression, Node, AbstractNode  {
 
   @Override
   public MIPSResult toMIPS(StringBuilder code, StringBuilder data, SymbolTable symbolTable, RegisterAllocator regAllocator) {
-    SymbolInfo info = symbolTable.find(id);
     String register = regAllocator.getAny();
     code.append("# Get ").append(id).append("'s offset from $sp from the symbol table and initialize ").append(id).append("'s address with it. We'll add $sp later.\n");
     code.append("li ").append(register).append(" ").append(symbolTable.find(id).getTotalOffset()).append("\n");

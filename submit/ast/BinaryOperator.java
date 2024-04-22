@@ -48,6 +48,7 @@ public class BinaryOperator implements Expression, AbstractNode {
 //      # Load the value of a.
         regAllocator.clear(left.getRegister());
         code.append("lw ").append(leftRegister).append(" 0(").append(left.getRegister()).append(")\n");
+//        regAllocator.clear(leftRegister);
       }
     }
     resultReg = regAllocator.getAny();
@@ -90,7 +91,46 @@ public class BinaryOperator implements Expression, AbstractNode {
         resultReg = regAllocator.getAny();
         code.append("mflo ").append(resultReg).append("\n");
       }
+      else if (this.type == BinaryOperatorType.EQ) {
+        regAllocator.clear(leftRegister);
+        regAllocator.clear(rightRegister);
+        resultReg = regAllocator.getAny();
+        code.append(String.format("sub %s %s %s\n", resultReg, leftRegister, rightRegister));
+      }
+      else if (this.type == BinaryOperatorType.NE) {
+        regAllocator.clear(leftRegister);
+        regAllocator.clear(rightRegister);
+      }
+      else if (this.type == BinaryOperatorType.GE) {
+        regAllocator.clear(leftRegister);
+        regAllocator.clear(rightRegister);
+        resultReg = regAllocator.getAny();
+        code.append(String.format("slt %s %s %s\n", resultReg, leftRegister, rightRegister));
+      }
+      else if (this.type == BinaryOperatorType.GT) {
+        regAllocator.clear(leftRegister);
+        regAllocator.clear(rightRegister);
+        resultReg = regAllocator.getAny();
+        code.append(String.format("slt %s %s %s\n", resultReg, rightRegister, leftRegister));
+        code.append(String.format("subi %s %s 1\n", resultReg, resultReg));
+      }
+      else if (this.type == BinaryOperatorType.LE) {
+        regAllocator.clear(leftRegister);
+        regAllocator.clear(rightRegister);
+        resultReg = regAllocator.getAny();
+        code.append(String.format("slt %s %s %s\n", resultReg, rightRegister, leftRegister));
+
+      }
+      else if (this.type == BinaryOperatorType.LT) {
+        regAllocator.clear(leftRegister);
+        regAllocator.clear(rightRegister);
+        resultReg = regAllocator.getAny();
+        code.append(String.format("slt %s %s %s\n", resultReg, leftRegister, rightRegister));
+        code.append(String.format("subi %s %s 1\n", resultReg, resultReg));
+      }
+
     }
+//    regAllocator.clear(resultReg);
     return MIPSResult.createRegisterResult(resultReg, VarType.INT);
   }
 

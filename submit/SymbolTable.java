@@ -63,7 +63,6 @@ public class SymbolTable {
     SymbolTable child = new SymbolTable();
     children.add(child);
     child.parent = this;
-    child.resetOffset();
     return child;
   }
 
@@ -72,12 +71,16 @@ public class SymbolTable {
   }
 
   public String getUniqueLabel() {
-    int currentUniqueLabel = uniqueLable++;
+    SymbolTable current = this;
+    while (current.parent != null) {
+      current = current.parent;
+    }
+    int currentUniqueLabel = current.increaseUniqueLabel();
     return "datalabel" + currentUniqueLabel;
   }
 
-  public void resetOffset() {
-    this.size = 0;
+  public int increaseUniqueLabel() {
+    return uniqueLable++;
   }
 
   public int getSize() {

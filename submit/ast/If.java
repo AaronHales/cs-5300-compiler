@@ -4,6 +4,11 @@
  */
 package submit.ast;
 
+import submit.MIPSResult;
+import submit.RegisterAllocator;
+import submit.SymbolInfo;
+import submit.SymbolTable;
+
 /**
  *
  * @author edwajohn
@@ -41,4 +46,28 @@ public class If implements Statement, AbstractNode  {
     }
 //    builder.append(prefix).append("}");
   }
+
+  @Override
+  public MIPSResult toMIPS(StringBuilder code, StringBuilder data, SymbolTable symbolTable, RegisterAllocator regAllocator) {
+    MIPSResult expressionResult = expression.toMIPS(code, data, symbolTable, regAllocator);
+//    regAllocator.clear(expressionResult.getRegister());
+    String trueUniquelabel = symbolTable.getUniqueLabel();
+    String falseUniquelabel = symbolTable.getUniqueLabel();
+    code.append(String.format("bne %s $zero %s\n", expressionResult.getRegister(), trueUniquelabel));
+    MIPSResult trueStatementMIPS = trueStatement.toMIPS(code, data, symbolTable, regAllocator);
+//    regAllocator.clear(trueStatementMIPS.getRegister());
+    if (falseStatement != null) {
+      code.append(String.format("j %s\n", falseUniquelabel));
+      code.append(trueUniquelabel).append(":\n");
+      MIPSResult falseStatementMIPS = falseStatement.toMIPS(code, data, symbolTable, regAllocator);
+      code.append(falseUniquelabel).append(":\n");
+    }
+    else {
+      code.append(String.format("j %s\n", falseUniquelabel));
+      code.append(trueUniquelabel).append(":\n");
+      code.append(falseUniquelabel).append(":\n");
+    }
+    return MIPSResult.createVoidResult();
+  }
+
 }
