@@ -74,6 +74,11 @@ public class Call implements Expression, AbstractNode  {
       code.append("move ").append(raReg).append(" $ra\n");
       code.append("# Save $t0-9 registers\n");
       int offset = 4 + symbolTable.getSize();
+      int numParams = 4;
+//      for (Expression arg: args) {
+//        numParams += 4;
+//      }
+      code.append(String.format("# offset: %d, numParams: %d, paramCount: %d\n", offset, numParams, 0));
       regAllocator.saveT(code, offset-4);
       code.append("# Evaluate parameters and save to stack\n");
       int paramCount = -4;
@@ -92,12 +97,15 @@ public class Call implements Expression, AbstractNode  {
             regAllocator.clear(resultReg);
             resultReg = result.getRegister();
           }
+          code.append(String.format("# offset: %d, numParams: %d, paramCount: %d\n", offset, numParams, paramCount));
           code.append("sw ").append(resultReg).append(" ");
-          code.append(-(symbolTable.getSize() + paramCount)).append("($sp)\n");
+          code.append(-(offset + numParams)).append("($sp)\n");
 
-          paramCount += 4;
+          numParams += 4;
+//          paramCount += 4;
         }
         regAllocator.clear(resultReg);
+        code.append(String.format("# symbol table size: %d, offset: %d, paramCount: %d, numParams: %d\n", symbolTable.getSize(), offset, paramCount, numParams));
       }
       code.append("# Update the stack pointer\n");
 
@@ -117,7 +125,7 @@ public class Call implements Expression, AbstractNode  {
 //      data.append(id).append(" return val type: ").append(symbolTable.find(id).getType()).append("\n");
       if (symbolTable.find(id).getType() != null) {
         code.append("# Get return value off stack\n");
-        code.append("lw ").append(returnRa).append(" ").append(-(paramCount)).append("($sp)\n");
+        code.append("lw ").append(returnRa).append(" ").append(-(offset + numParams)).append("($sp)\n");
       }
       regAllocator.clear(returnRa);
       regAllocator.clear(raReg);
