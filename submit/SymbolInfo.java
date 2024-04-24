@@ -18,12 +18,14 @@ public class SymbolInfo {
   private final boolean function;
   private int offset;
   private int baseOffset;
+  private int arraySize;
 
   public SymbolInfo(String id, VarType type, boolean function) {
     this.id = id;
     this.type = type;
     this.function = function;
     this.offset = 0;
+    this.arraySize = 0;
     if (function) {
       this.baseOffset = 0;
     }
@@ -43,6 +45,14 @@ public class SymbolInfo {
   @Override
   public String toString() {
     return "<" + id + ", " + type + '>';
+  }
+
+  public void setArraySize(int size) {
+    this.arraySize = size;
+  }
+
+  public int getArraySize() {
+    return arraySize;
   }
 
   public int getTotalOffset() {

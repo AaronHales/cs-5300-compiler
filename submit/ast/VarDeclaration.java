@@ -51,8 +51,12 @@ public class VarDeclaration implements Declaration, Node, AbstractNode  {
 
   @Override
   public MIPSResult toMIPS(StringBuilder code, StringBuilder data, SymbolTable symbolTable, RegisterAllocator regAllocator) {
-    for (String id : ids) {
-      symbolTable.addSymbol(id, new SymbolInfo(id, this.type, false));
+    for (int i = 0; i < ids.size(); i++) {
+      String id = ids.get(i);
+      SymbolInfo info = new SymbolInfo(id, this.type, false);
+      info.setArraySize(arraySizes.get(i));
+      symbolTable.addSymbol(id, info);
+
     }
     return MIPSResult.createVoidResult();
   }
